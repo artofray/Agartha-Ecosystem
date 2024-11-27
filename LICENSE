@@ -1,3 +1,44 @@
+# Agartha Ecosystem License Agreement
+
+## 1. Copyright and Trademark Protection
+
+All content related to the **Agartha Ecosystem**, including but not limited to the following components, is protected under copyright law and trademark regulations:
+
+- **Weedland**: Including the name, brand, associated images, concepts, and gameplay mechanics.
+- **MyAI**: Including the name, brand, associated characters, unique interactions, and behavioral models.
+- **Music Machine**: Including the name, associated visuals, music generation tools, and collaborative features.
+- **Agartha**: The overarching concept, branding, imagery, and intellectual property of the ecosystem.
+
+These components are the intellectual property of [Your Name/Company]. Unauthorized reproduction, duplication, or commercialization of these elements without express written permission is strictly prohibited.
+
+## 2. Open Source Components
+
+Portions of the **Agartha Ecosystem** are being shared with the public as open source to foster innovation and collaboration, specifically:
+
+- **Core Platform Infrastructure**: Including blockchain integration modules, certain AR/VR interaction modules, and basic interface components, excluding unique branding assets.
+- **Developer SDK and API Tools**: Selected development tools that enable developers to build on top of the Agartha ecosystem without accessing proprietary concepts or assets.
+
+These components are licensed under the **MIT License**. You are free to use, modify, and distribute these parts of the software, provided appropriate credit is given and no proprietary assets are included.
+
+## 3. Public Ownership and Contribution
+
+The **Agartha Ecosystem** is open for public ownership and contribution, aiming to create a community-driven experience. As part of this initiative:
+
+- Contributors can own part of the ecosystem through **Greenback (GBK) Tokens**, participating in governance and having a say in the development direction of Agartha.
+- Any contribution made to the open-source sections of Agartha is subject to community guidelines and code of conduct, ensuring that all contributions are in line with the vision and ethical values of the project.
+
+## 4. Usage Restrictions
+
+- **Commercial Use**: The proprietary components of the Agartha ecosystem, including Weedland, MyAI, Music Machine, and any branding, may not be used for commercial purposes without a separate license or agreement.
+- **No Duplication**: The concepts, designs, and branding of the Agartha ecosystem are original works, and any attempts to create a competing platform based on these ideas, without proper permission, is prohibited.
+
+## 5. Disclaimer
+
+This software is provided "as-is," without any express or implied warranty. In no event shall the authors be held liable for any damages arising from the use of this software.
+
+## 6. Contact Information
+
+For questions regarding licensing, usage, or partnership opportunities, please contact:
 MIT License
 
 Copyright (c) 2024 artofray
@@ -19,3 +60,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+Proprietary License for Core IP: Protects the names, images, and unique concepts of Weedland, MyAI, Music Machine, and Agartha itself. This is to prevent anyone from duplicating or commercially exploiting your core intellectual property without permission.
+
+MIT License for Open Source Components: Portions of the platform (like developer tools and core infrastructure) are made open source under the MIT license. This means these parts can be freely used and modified, promoting community collaboration, but without allowing proprietary branding or assets to be duplicated.
