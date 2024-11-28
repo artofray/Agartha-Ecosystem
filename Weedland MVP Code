@@ -1,0 +1,106 @@
+## Code Review
+
+### Weedland Component 
+import React, { useState, useEffect } from 'react';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogDescription } from '@/components/ui/alert-dialog';
+import { Leaf, Sprout, Users, Trophy, Store } from 'lucide-react';
+
+const WeedVille = () => {
+  const [showIntro, setShowIntro] = useState(true);
+  const [playerLevel, setPlayerLevel] = useState(1);
+  const [greenBacks, setGreenBacks] = useState(1000);
+  const [showAR, setShowAR] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGreenBacks(prev => prev + 10);
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-900 via-black to-purple-900 p-4">
+      <AlertDialog open={showIntro}>
+        <AlertDialogContent className="bg-black/80 text-white">
+          <AlertDialogTitle>Welcome to WeedVille!</AlertDialogTitle>
+          <AlertDialogDescription>
+            Explore a world where cannabis culture meets social gaming. 
+            Grow your garden, connect with others, and earn GreenBacks.
+          </AlertDialogDescription>
+          <Button 
+            onClick={() => setShowIntro(false)}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            Let's Begin!
+          </Button>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-4">
+          <Card className="bg-green-800/50">
+            <CardContent className="p-2 flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-yellow-400" />
+              <span className="text-white">Level {playerLevel}</span>
+            </CardContent>
+          </Card>
+          <Card className="bg-green-800/50">
+            <CardContent className="p-2 flex items-center gap-2">
+              <Leaf className="h-5 w-5 text-green-400" />
+              <span className="text-white">{greenBacks} GB</span>
+            </CardContent>
+          </Card>
+        </div>
+        <Button 
+          onClick={() => setShowAR(true)}
+          className="bg-purple-600 hover:bg-purple-700"
+        >
+          Enter AR Mode
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className="bg-green-800/30">
+          <CardHeader>
+            <h3 className="text-white flex items-center gap-2">
+              <Sprout className="h-5 w-5" />
+              My Garden
+            </h3>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-300">Your garden content will appear here...</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-green-800/30">
+          <CardHeader>
+            <h3 className="text-white flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Community
+            </h3>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-300">Community features will appear here...</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-green-800/30">
+          <CardHeader>
+            <h3 className="text-white flex items-center gap-2">
+              <Store className="h-5 w-5" />
+              Marketplace
+            </h3>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-300">Marketplace items will appear here...</p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default WeedVille;
