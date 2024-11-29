@@ -1,0 +1,200 @@
+#new component
+## MY.A.I. A.I. Companion App
+const AvatarCustomizationUI = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-black to-purple-900 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Avatar Preview */}
+          <div className="bg-black/30 backdrop-blur rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-white mb-4">Your Avatar</h2>
+            <div className="aspect-square rounded-lg overflow-hidden">
+              <canvas id="avatarPreview" className="w-full h-full" />
+            </div>
+          </div>
+
+          {/* Customization Options */}
+          <div className="bg-black/30 backdrop-blur rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-white mb-4">Customize</h2>
+            <div className="space-y-6">
+              {/* Body */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-2">Body</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {/* Body type options */}
+                </div>
+              </div>
+
+              {/* Face */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-2">Face</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {/* Facial feature options */}
+                </div>
+              </div>
+
+              {/* Clothing */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-2">Clothing</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {/* Clothing options */}
+                </div>
+              </div>
+
+              {/* Accessories */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-2">Accessories</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {/* Accessory options */}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AvatarCustomizationUI;
+### Ready Player One integration
+// Avatar Integration Core Component
+import React, { useEffect, useState } from 'react';
+import { Scene, Engine } from '@babylonjs/core';
+import { GLTFLoader } from '@babylonjs/loaders';
+import { Vector3, Quaternion } from '@babylonjs/core/Maths';
+
+const AvatarSystem = () => {
+  // Avatar state management
+  const [currentAvatar, setCurrentAvatar] = useState(null);
+  const [animations, setAnimations] = useState({});
+
+  // Initialize 3D scene
+  useEffect(() => {
+    const canvas = document.getElementById('renderCanvas');
+    const engine = new Engine(canvas, true);
+    const scene = new Scene(engine);
+
+    // Avatar loading function
+    const loadAvatar = async (avatarUrl) => {
+      try {
+        const result = await GLTFLoader.ImportMeshAsync("", avatarUrl, "", scene);
+        const avatar = result.meshes[0];
+        setCurrentAvatar(avatar);
+        
+        // Setup default animations
+        setupAnimations(result.animationGroups);
+      } catch (error) {
+        console.error("Failed to load avatar:", error);
+      }
+    };
+
+    // Animation system
+    const setupAnimations = (animationGroups) => {
+      const animationMap = {
+        idle: animationGroups.find(a => a.name === "Idle"),
+        walk: animationGroups.find(a => a.name === "Walk"),
+        run: animationGroups.find(a => a.name === "Run"),
+        wave: animationGroups.find(a => a.name === "Wave"),
+      };
+      setAnimations(animationMap);
+    };
+
+    // AR positioning and scaling
+    const setupAvatarInAR = (avatar) => {
+      avatar.scaling = new Vector3(1, 1, 1);
+      avatar.position = new Vector3(0, 0, 0);
+      avatar.rotationQuaternion = new Quaternion.Identity();
+    };
+
+    // Handle avatar interactions
+    const setupInteractions = (avatar) => {
+      avatar.actionManager = new ActionManager(scene);
+      avatar.actionManager.registerAction(
+        new ExecuteCodeAction(
+          ActionManager.OnPickTrigger,
+          () => {
+            // Handle avatar selection/interaction
+          }
+        )
+      );
+    };
+
+    // Render loop
+    engine.runRenderLoop(() => {
+      scene.render();
+    });
+
+    // Initial avatar load
+    loadAvatar('https://models.readyplayer.me/6749567bde074a8b632d8b84.glb');
+
+    return () => {
+      engine.dispose();
+    };
+  }, []);
+
+  return (
+    <canvas id="renderCanvas" style={{ width: '100%', height: '100%' }} />
+  );
+};
+
+// Avatar Customization Interface
+const AvatarCustomization = () => {
+  const [customizationOptions, setCustomizationOptions] = useState({
+    body: [],
+    face: [],
+    clothing: [],
+    accessories: []
+  });
+
+  const updateAvatar = async (options) => {
+    // Update avatar appearance based on selected options
+    // Connect to Ready Player Me API for updates
+  };
+
+  return (
+    <div className="avatar-customization-panel">
+      {/* Customization UI components */}
+    </div>
+  );
+};
+
+// AR Integration Component
+const ARAvatarView = () => {
+  const [arSession, setARSession] = useState(null);
+
+  useEffect(() => {
+    // Initialize AR session
+    const initAR = async () => {
+      if (navigator.xr) {
+        const session = await navigator.xr.requestSession('immersive-ar');
+        setARSession(session);
+      }
+    };
+
+    initAR();
+  }, []);
+
+  return (
+    <div className="ar-view">
+      {/* AR view components */}
+    </div>
+  );
+};
+
+// Animation Controller
+const AnimationController = ({ animations }) => {
+  const playAnimation = (animationName) => {
+    if (animations[animationName]) {
+      animations[animationName].play();
+    }
+  };
+
+  return (
+    <div className="animation-controls">
+      {/* Animation control buttons */}
+    </div>
+  );
+};
+
+export { AvatarSystem, AvatarCustomization, ARAvatarView, AnimationController };
