@@ -1,0 +1,219 @@
+#New Component
+## The Music Machine
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { 
+  Play, Pause, RotateCcw, Plus, 
+  Music, Mic, Video, 
+  Settings, Square
+} from 'lucide-react';
+
+const MusicMachine = () => {
+  // Audio Analysis
+  const [audioData, setAudioData] = useState(new Uint8Array(0));
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(75);
+  const [bpm, setBpm] = useState(120);
+  const [isLooping, setIsLooping] = useState(false);
+  
+  const audioRef = useRef(null);
+  const canvasRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const animationRef = useRef(null);
+
+  // Initialize audio context and analyzer
+  useEffect(() => {
+    audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    analyserRef.current = audioContextRef.current.createAnalyser();
+    analyserRef.current.fftSize = 2048;
+    
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
+
+  // Audio file upload handler
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    const url = URL.createObjectURL(file);
+    
+    if (audioRef.current) {
+      audioRef.current.src = url;
+      audioRef.current.load();
+    }
+  };
+
+  // Audio visualization
+  const drawVisualization = () => {
+    if (!canvasRef.current || !analyserRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const bufferLength = analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    
+    const draw = () => {
+      animationRef.current = requestAnimationFrame(draw);
+      analyserRef.current.getByteFrequencyData(dataArray);
+      
+      ctx.fillStyle = 'rgb(0, 0, 0)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      const barWidth = (canvas.width / bufferLength) * 2.5;
+      let barHeight;
+      let x = 0;
+      
+      for(let i = 0; i < bufferLength; i++) {
+        barHeight = dataArray[i] / 2;
+        
+        const r = barHeight + (25 * (i/bufferLength));
+        const g = 250 * (i/bufferLength);
+        const b = 50;
+
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+        x += barWidth + 1;
+      }
+    };
+
+    draw();
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black p-4">
+      <Card className="max-w-4xl mx-auto bg-black/20 backdrop-blur">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center gap-2">
+            <Music className="w-6 h-6" />
+            Music Machine
+          </CardTitle>
+        </CardHeader>
+        
+        <CardContent className="space-y-6">
+          {/* Audio Visualization Canvas */}
+          <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black/40">
+            <canvas 
+              ref={canvasRef}
+              className="w-full h-full"
+              width={1920}
+              height={1080}
+            />
+            
+            {/* Controls Overlay */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent">
+              <div className="flex justify-between items-center">
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full bg-white/10 hover:bg-white/20"
+                    onClick={() => setIsPlaying(!isPlaying)}
+                  >
+                    {isPlaying ? 
+                      <Pause className="w-6 h-6 text-white" /> : 
+                      <Play className="w-6 h-6 text-white" />
+                    }
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`rounded-full ${isLooping ? 'bg-white/20' : 'bg-white/10'}`}
+                    onClick={() => setIsLooping(!isLooping)}
+                  >
+                    <RotateCcw className="w-6 h-6 text-white" />
+                  </Button>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full bg-white/10 hover:bg-white/20"
+                  >
+                    <Video className="w-6 h-6 text-white" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full bg-white/10 hover:bg-white/20"
+                  >
+                    <Settings className="w-6 h-6 text-white" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Audio Controls */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-white">Volume</label>
+              <Slider
+                value={[volume]}
+                onValueChange={([value]) => setVolume(value)}
+                max={100}
+                step={1}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-white">BPM</label>
+              <Slider
+                value={[bpm]}
+                onValueChange={([value]) => setBpm(value)}
+                min={60}
+                max={200}
+                step={1}
+              />
+            </div>
+          </div>
+
+          {/* Track Controls */}
+          <div className="grid grid-cols-2 gap-4">
+            <Button 
+              variant="secondary"
+              className="w-full flex items-center justify-center gap-2"
+              onClick={() => document.getElementById('audio-upload').click()}
+            >
+              <Plus className="w-4 h-4" />
+              Load Audio
+            </Button>
+            <Button 
+              variant="secondary"
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <Mic className="w-4 h-4" />
+              Record
+            </Button>
+          </div>
+
+          <input 
+            id="audio-upload"
+            type="file"
+            accept="audio/*"
+            className="hidden"
+            onChange={handleFileUpload}
+          />
+          
+          <audio 
+            ref={audioRef}
+            className="hidden"
+            loop={isLooping}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+          />
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default MusicMachine;
