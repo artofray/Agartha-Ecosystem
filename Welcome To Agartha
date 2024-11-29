@@ -1,0 +1,122 @@
+#New Component
+## Welcome to Agartha
+import React from 'react';
+import { 
+  Leaf, 
+  Music, 
+  Globe, 
+  Users, 
+  Code,
+  Heart
+} from 'lucide-react';
+
+const WelcomeToAgartha = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-black to-purple-900 text-white">
+      {/* Hero Section */}
+      <div className="max-w-6xl mx-auto px-4 py-20 text-center">
+        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-purple-400">
+          Welcome to Agartha
+        </h1>
+        <p className="text-xl md:text-2xl text-gray-300 mb-12">
+          Where Technology Meets Consciousness
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <button className="px-8 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-bold transition-colors">
+            Join the Revolution
+          </button>
+          <button className="px-8 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg font-bold transition-colors">
+            Explore Weedland
+          </button>
+        </div>
+      </div>
+
+      {/* Core Pillars */}
+      <div className="max-w-6xl mx-auto px-4 py-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-black/30 backdrop-blur p-6 rounded-lg">
+            <Leaf className="w-12 h-12 text-emerald-400 mb-4" />
+            <h3 className="text-2xl font-bold mb-4">Weedland</h3>
+            <p className="text-gray-300">
+              An immersive AR experience celebrating cannabis culture through education,
+              community, and conscious exploration.
+            </p>
+          </div>
+
+          <div className="bg-black/30 backdrop-blur p-6 rounded-lg">
+            <Music className="w-12 h-12 text-purple-400 mb-4" />
+            <h3 className="text-2xl font-bold mb-4">Music Machine</h3>
+            <p className="text-gray-300">
+              Real-time music collaboration and visualization tools for creating
+              immersive audiovisual experiences.
+            </p>
+          </div>
+
+          <div className="bg-black/30 backdrop-blur p-6 rounded-lg">
+            <Heart className="w-12 h-12 text-pink-400 mb-4" />
+            <h3 className="text-2xl font-bold mb-4">AI Companions</h3>
+            <p className="text-gray-300">
+              Personalized AI companions helping users grow emotionally and develop
+              meaningful relationships.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Vision Statement */}
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Vision</h2>
+        <p className="text-xl text-gray-300">
+          Agartha is more than a platform—it's a movement. We're building a future where
+          technology enhances consciousness, fosters genuine human connection, and empowers
+          creative expression without censorship or judgment.
+        </p>
+      </div>
+
+      {/* Join the Revolution */}
+      <div className="bg-black/50 backdrop-blur">
+        <div className="max-w-6xl mx-auto px-4 py-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Join the Revolution
+              </h2>
+              <p className="text-xl text-gray-300 mb-8">
+                We're looking for visionaries, developers, artists, and dreamers to help
+                build this new world. Whether you're a coder, creator, or consciousness
+                explorer, there's a place for you in Agartha.
+              </p>
+              <button className="px-8 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-bold transition-colors">
+                Get Involved
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-black/30 backdrop-blur p-4 rounded-lg">
+                <Code className="w-8 h-8 text-emerald-400 mb-2" />
+                <h4 className="font-bold mb-2">Developers</h4>
+                <p className="text-gray-300">Help build the future of conscious technology</p>
+              </div>
+              <div className="bg-black/30 backdrop-blur p-4 rounded-lg">
+                <Users className="w-8 h-8 text-purple-400 mb-2" />
+                <h4 className="font-bold mb-2">Community</h4>
+                <p className="text-gray-300">Shape the culture and vision of Agartha</p>
+              </div>
+              <div className="bg-black/30 backdrop-blur p-4 rounded-lg">
+                <Globe className="w-8 h-8 text-blue-400 mb-2" />
+                <h4 className="font-bold mb-2">Explorers</h4>
+                <p className="text-gray-300">Discover new realms of consciousness</p>
+              </div>
+              <div className="bg-black/30 backdrop-blur p-4 rounded-lg">
+                <Music className="w-8 h-8 text-pink-400 mb-2" />
+                <h4 className="font-bold mb-2">Artists</h4>
+                <p className="text-gray-300">Create immersive experiences</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default WelcomeToAgartha;
