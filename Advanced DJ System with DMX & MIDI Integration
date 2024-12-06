@@ -1,0 +1,229 @@
+#Advanced DJ System with DMX & MIDI Integration
+##import React, { useState, useEffect, useRef } from 'react';
+import { Music, Disc, Play, Square, Radio, Settings } from 'lucide-react';
+
+const DMXDJSystem = () => {
+  const [scenes, setScenes] = useState({
+    basics: [
+      { name: 'Beat Pulse', colors: ['#ff0000', '#00ff00', '#0000ff'], speed: 1 },
+      { name: 'Strobe', colors: ['#ffffff'], speed: 0.5 },
+      { name: 'Color Wave', colors: ['#ff0000', '#00ff00', '#0000ff'], speed: 2 },
+      { name: 'Bass React', colors: ['#ff00ff', '#00ffff'], speed: 1 }
+    ],
+    advanced: [
+      { name: 'Rainbow Chase', colors: ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#8b00ff'], speed: 1.5 },
+      { name: 'Spectrum Analyzer', colors: ['#ff0000', '#00ff00'], speed: 1 },
+      { name: 'Pitch Response', colors: ['#00ffff', '#ff00ff'], speed: 0.8 },
+      { name: 'Volume Burst', colors: ['#ffffff', '#ff0000'], speed: 2 }
+    ],
+    custom: []
+  });
+
+  const [dmxConfig, setDmxConfig] = useState({
+    universe: 1,
+    channels: 512,
+    fixtures: [
+      { name: 'PAR LED 1', startChannel: 1, channels: 4 },
+      { name: 'Moving Head 1', startChannel: 5, channels: 12 },
+      { name: 'Laser 1', startChannel: 17, channels: 8 }
+    ]
+  });
+
+  const [midiConfig, setMidiConfig] = useState({
+    input: null,
+    output: null,
+    mapping: {
+      noteOn: {},
+      controlChange: {},
+      programChange: {}
+    }
+  });
+
+  const [activeScene, setActiveScene] = useState(null);
+  const [bpm, setBpm] = useState(120);
+  const [audioLevel, setAudioLevel] = useState(0);
+  const [connected, setConnected] = useState({
+    dmx: false,
+    midi: false,
+    audio: false
+  });
+
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+
+  useEffect(() => {
+    // Initialize Web Audio API
+    audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    analyserRef.current = audioContextRef.current.createAnalyser();
+    analyserRef.current.fftSize = 2048;
+
+    // Initialize MIDI
+    if (navigator.requestMIDIAccess) {
+      navigator.requestMIDIAccess()
+        .then(onMIDISuccess)
+        .catch(err => console.error('MIDI Access Error:', err));
+    }
+
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
+
+  const onMIDISuccess = (midiAccess) => {
+    setConnected(prev => ({ ...prev, midi: true }));
+    
+    midiAccess.inputs.forEach(input => {
+      input.onmidimessage = onMIDIMessage;
+    });
+  };
+
+  const onMIDIMessage = (message) => {
+    const [command, note, velocity] = message.data;
+    
+    switch (command) {
+      case 144: // Note On
+        if (velocity > 0) {
+          triggerLightScene(note);
+        }
+        break;
+      case 176: // Control Change
+        updateLightParameter(note, velocity);
+        break;
+    }
+  };
+
+  const triggerLightScene = (sceneIndex) => {
+    // Implement scene triggering
+  };
+
+  const updateLightParameter = (param, value) => {
+    // Implement parameter updates
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-900 p-6">
+      {/* Header with Connection Status */}
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl text-green-500">DMX DJ Controller</h1>
+        <div className="flex gap-4">
+          {Object.entries(connected).map(([key, value]) => (
+            <div
+              key={key}
+              className={`px-4 py-2 rounded-full flex items-center gap-2 ${
+                value ? 'bg-green-500' : 'bg-red-500'
+              }`}
+            >
+              <Radio className="h-4 w-4" />
+              {key.toUpperCase()}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-8">
+        {/* DJ Controls */}
+        <div className="space-y-8">
+          {/* Deck A */}
+          <DJDeck id="A" />
+          {/* Deck B */}
+          <DJDeck id="B" />
+        </div>
+
+        {/* Light Controls */}
+        <div className="space-y-8">
+          {/* Scene Selection */}
+          <LightSceneSelector scenes={scenes} onSelect={setActiveScene} />
+          {/* Pattern Editor */}
+          <PatternEditor />
+          {/* DMX Monitor */}
+          <DMXMonitor config={dmxConfig} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DJDeck = ({ id }) => (
+  <div className="bg-gray-800 p-6 rounded-lg">
+    <h2 className="text-xl text-green-500 mb-4">Deck {id}</h2>
+    <div className="space-y-4">
+      <div className="h-32 bg-black rounded" />
+      <div className="flex gap-4">
+        <button className="bg-green-500 p-2 rounded">
+          <Play className="h-4 w-4" />
+        </button>
+        <input type="range" className="flex-1" />
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        <button className="bg-gray-700 p-2 rounded">CUE</button>
+        <button className="bg-gray-700 p-2 rounded">SYNC</button>
+        <button className="bg-gray-700 p-2 rounded">LOOP</button>
+      </div>
+    </div>
+  </div>
+);
+
+const LightSceneSelector = ({ scenes, onSelect }) => (
+  <div className="bg-gray-800 p-6 rounded-lg">
+    <h2 className="text-xl text-green-500 mb-4">Light Scenes</h2>
+    <div className="grid grid-cols-2 gap-4">
+      {Object.entries(scenes).map(([category, categoryScenes]) => (
+        <div key={category}>
+          <h3 className="text-green-500 mb-2 capitalize">{category}</h3>
+          {categoryScenes.map((scene, i) => (
+            <button
+              key={i}
+              className="w-full p-2 bg-gray-700 rounded mb-2 text-left"
+              onClick={() => onSelect(scene)}
+            >
+              <div className="flex justify-between items-center">
+                <span>{scene.name}</span>
+                <div className="flex gap-1">
+                  {scene.colors.map((color, j) => (
+                    <div
+                      key={j}
+                      className="w-4 h-4 rounded"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const PatternEditor = () => (
+  <div className="bg-gray-800 p-6 rounded-lg">
+    <h2 className="text-xl text-green-500 mb-4">Pattern Editor</h2>
+    <div className="grid grid-cols-16 gap-1 h-32 bg-gray-700 rounded p-2">
+      {Array(16).fill(0).map((_, i) => (
+        <div
+          key={i}
+          className="bg-gray-900 rounded cursor-pointer hover:bg-green-500"
+        />
+      ))}
+    </div>
+  </div>
+);
+
+const DMXMonitor = ({ config }) => (
+  <div className="bg-gray-800 p-6 rounded-lg">
+    <h2 className="text-xl text-green-500 mb-4">DMX Monitor</h2>
+    <div className="grid grid-cols-8 gap-2">
+      {config.fixtures.map((fixture, i) => (
+        <div key={i} className="bg-gray-700 p-2 rounded text-center">
+          <div className="text-sm text-green-500">{fixture.name}</div>
+          <div className="text-xs">CH: {fixture.startChannel}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+export default DMXDJSystem;
