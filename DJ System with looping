@@ -1,0 +1,206 @@
+#DJ System with Looping
+##import React, { useState, useEffect, useRef } from 'react';
+import { Music, Disc, Play, Square, Settings, Repeat } from 'lucide-react';
+
+const DeckControls = ({ deck, settings, setSettings }) => {
+  const [isLooping, setIsLooping] = useState(false);
+  const [loopStart, setLoopStart] = useState(0);
+  const [loopEnd, setLoopEnd] = useState(4);
+  const [loopSize, setLoopSize] = useState(1); // In beats
+
+  // Available loop sizes in beats
+  const loopSizes = [0.25, 0.5, 1, 2, 4, 8, 16];
+
+  return (
+    <div className="bg-gray-800 p-6 rounded-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl text-green-500">Deck {deck}</h2>
+        <div className="flex gap-2">
+          <input
+            type="file"
+            accept="audio/*"
+            className="hidden"
+            id={`deck${deck}Upload`}
+          />
+          <label 
+            htmlFor={`deck${deck}Upload`}
+            className="bg-green-500 text-black px-3 py-1 rounded cursor-pointer hover:bg-green-600"
+          >
+            <Music className="h-4 w-4" />
+          </label>
+        </div>
+      </div>
+
+      {/* Loop Controls */}
+      <div className="mb-4 bg-gray-700 p-4 rounded">
+        <div className="flex items-center justify-between mb-2">
+          <button 
+            className={`flex items-center gap-2 px-3 py-1 rounded ${
+              isLooping ? 'bg-green-500 text-black' : 'bg-gray-600 text-green-500'
+            }`}
+            onClick={() => setIsLooping(!isLooping)}
+          >
+            <Repeat className="h-4 w-4" />
+            Loop
+          </button>
+          <div className="flex gap-2">
+            {loopSizes.map(size => (
+              <button
+                key={size}
+                className={`px-2 py-1 rounded ${
+                  loopSize === size 
+                    ? 'bg-green-500 text-black' 
+                    : 'bg-gray-600 text-green-500'
+                }`}
+                onClick={() => setLoopSize(size)}
+              >
+                {size === 0.25 ? '1/4' : size === 0.5 ? '1/2' : size}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-green-500">Loop Range</span>
+          <input
+            type="range"
+            min="0"
+            max="16"
+            step="0.25"
+            value={loopStart}
+            onChange={(e) => setLoopStart(Number(e.target.value))}
+            className="flex-1"
+          />
+          <input
+            type="range"
+            min={loopStart}
+            max="16"
+            step="0.25"
+            value={loopEnd}
+            onChange={(e) => setLoopEnd(Number(e.target.value))}
+            className="flex-1"
+          />
+        </div>
+        <div className="flex justify-between text-green-500 text-sm mt-1">
+          <span>Start: {loopStart} bars</span>
+          <span>End: {loopEnd} bars</span>
+        </div>
+      </div>
+
+      {/* Transport Controls */}
+      <div className="flex items-center gap-2 mb-4">
+        <button className="bg-green-500 text-black p-2 rounded">
+          <Play className="h-4 w-4" />
+        </button>
+        <div className="text-green-500">
+          {Math.floor(loopStart / 4)}:{Math.floor((loopStart % 4) * 4)}:000
+        </div>
+      </div>
+
+      {/* Waveform Display with Loop Markers */}
+      <div className="h-24 bg-black rounded relative mb-4">
+        <canvas className="w-full h-full" />
+        {isLooping && (
+          <div 
+            className="absolute top-0 h-full bg-green-500 opacity-20"
+            style={{
+              left: `${(loopStart / 16) * 100}%`,
+              width: `${((loopEnd - loopStart) / 16) * 100}%`
+            }}
+          />
+        )}
+      </div>
+
+      {/* Deck Settings */}
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <select 
+          className="bg-gray-700 text-green-500 rounded p-2"
+          value={settings.oscillator}
+          onChange={(e) => setSettings({...settings, oscillator: e.target.value})}
+        >
+          <option value="sine">Sine</option>
+          <option value="square">Square</option>
+          <option value="sawtooth">Sawtooth</option>
+          <option value="triangle">Triangle</option>
+        </select>
+        <div className="flex items-center gap-2">
+          <span className="text-green-500">BPM</span>
+          <input
+            type="number"
+            min="60"
+            max="200"
+            value={settings.bpm || 120}
+            onChange={(e) => setSettings({...settings, bpm: Number(e.target.value)})}
+            className="w-20 bg-gray-700 text-green-500 rounded p-2"
+          />
+        </div>
+      </div>
+
+      {/* Loop Triggers */}
+      <div className="grid grid-cols-4 gap-2 mb-4">
+        {[1, 2, 3, 4].map(pad => (
+          <button
+            key={pad}
+            className="bg-gray-700 text-green-500 p-4 rounded hover:bg-gray-600 relative"
+          >
+            <span className="absolute top-1 left-1 text-xs">Loop {pad}</span>
+            1/{2 ** (pad-1)}
+          </button>
+        ))}
+      </div>
+
+      {/* Quantize Settings */}
+      <div className="flex items-center gap-4">
+        <span className="text-green-500">Quantize</span>
+        <select className="bg-gray-700 text-green-500 rounded p-2">
+          <option value="1">1 Beat</option>
+          <option value="0.5">1/2 Beat</option>
+          <option value="0.25">1/4 Beat</option>
+          <option value="0.125">1/8 Beat</option>
+        </select>
+      </div>
+    </div>
+  );
+};
+
+const DJSystem = () => {
+  const [deck1Settings, setDeck1Settings] = useState({
+    oscillator: 'sine',
+    volume: 0.7,
+    bpm: 120
+  });
+
+  const [deck2Settings, setDeck2Settings] = useState({
+    oscillator: 'sine',
+    volume: 0.7,
+    bpm: 120
+  });
+
+  return (
+    <div className="min-h-screen bg-gray-900 p-6">
+      <h1 className="text-4xl text-center text-green-500 mb-8">432Hz DJ System</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <DeckControls deck={1} settings={deck1Settings} setSettings={setDeck1Settings} />
+        <DeckControls deck={2} settings={deck2Settings} setSettings={setDeck2Settings} />
+      </div>
+
+      {/* Master Controls */}
+      <div className="mt-8 bg-gray-800 p-4 rounded-lg">
+        <h2 className="text-xl text-green-500 mb-4">Master</h2>
+        <div className="flex items-center gap-4">
+          <span className="text-green-500">Crossfader</span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            defaultValue="0.5"
+            className="flex-1"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DJSystem;
