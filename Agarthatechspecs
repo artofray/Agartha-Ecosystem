@@ -1,0 +1,189 @@
+# Agartha MVP Technical Specifications
+
+## 1. System Architecture Overview
+
+### Core Components
+1. Landing Page (Static + Dynamic Elements)
+2. Music Machine Web App
+3. MyA.I. Web Interface
+4. Authentication & User Management
+5. Data Management Layer
+
+### Technology Stack
+- Frontend: React + TypeScript
+- Backend: Node.js + Express
+- Database: MongoDB
+- Real-time: WebSocket
+- Authentication: JWT
+- Storage: AWS S3/Firebase
+- Deployment: Vercel/Netlify
+
+## 2. Data Structures
+
+### User Model
+```typescript
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  profileType: 'creator' | 'listener' | 'companion';
+  preferences: {
+    theme: 'light' | 'dark';
+    notifications: boolean;
+    privacyLevel: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Music Session Model
+```typescript
+interface MusicSession {
+  id: string;
+  userId: string;
+  name: string;
+  type: 'live' | 'recorded';
+  visualizerSettings: {
+    mode: string;
+    sensitivity: number;
+    colorScheme: string;
+  };
+  audioSettings: {
+    input: string;
+    effects: Effect[];
+    volume: number;
+  };
+  createdAt: Date;
+  endedAt?: Date;
+}
+```
+
+### AI Companion Model
+```typescript
+interface Companion {
+  id: string;
+  userId: string;
+  name: string;
+  personality: PersonalityTraits;
+  conversationHistory: Message[];
+  learningProgress: {
+    topics: string[];
+    level: number;
+    achievements: string[];
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+## 3. API Endpoints
+
+### Authentication
+```typescript
+// POST /api/auth/register
+interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
+// POST /api/auth/login
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+```
+
+### Music Machine
+```typescript
+// POST /api/music/sessions/create
+interface CreateSessionRequest {
+  name: string;
+  type: 'live' | 'recorded';
+  visualizerSettings: VisualizerSettings;
+}
+
+// WebSocket /ws/music/stream
+interface AudioStreamMessage {
+  sessionId: string;
+  audioData: ArrayBuffer;
+  timestamp: number;
+}
+```
+
+### AI Companion
+```typescript
+// POST /api/companion/chat
+interface ChatRequest {
+  companionId: string;
+  message: string;
+  context?: any;
+}
+
+// GET /api/companion/profile
+interface CompanionProfileRequest {
+  companionId: string;
+}
+```
+
+## 4. Component Architecture
+
+### Music Machine Component Structure
+```typescript
+// Core Components
+interface MusicMachineProps {
+  session: MusicSession;
+  audioContext: AudioContext;
+  visualizer: VisualizerComponent;
+  controls: ControlPanel;
+  effects: EffectRack;
+}
+
+// Visualizer Component
+interface VisualizerProps {
+  audioData: Float32Array;
+  settings: VisualizerSettings;
+  dimensions: {
+    width: number;
+    height: number;
+  };
+}
+```
+
+### AI Companion Component Structure
+```typescript
+// Main Companion Interface
+interface CompanionInterfaceProps {
+  companion: Companion;
+  chat: ChatInterface;
+  profile: ProfileDisplay;
+  settings: CompanionSettings;
+}
+
+// Chat Interface
+interface ChatInterfaceProps {
+  messages: Message[];
+  onSend: (message: string) => void;
+  isTyping: boolean;
+  error?: string;
+}
+```
+
+## 5. Security Considerations
+
+### Data Protection
+- End-to-end encryption for chat
+- Secure audio streaming
+- Protected user data
+- Rate limiting
+- Input validation
+
+### Authentication Flow
+- JWT token-based auth
+- Refresh token rotation
+- Session management
+- Password hashing
+- 2FA (future implementation)
+
+Would you like me to generate the initial codebase for any of these components or move forward with a specific aspect of the implementation?
