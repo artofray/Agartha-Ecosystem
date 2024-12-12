@@ -1,0 +1,214 @@
+#NEAR BLOCKCHAIN 
+### NEAR Blockchain Integration for Agartha Ecosystem
+
+## 1. Smart Contract Architecture
+
+### Greenbacks Token Contract
+```rust
+#[near_bindgen]
+pub struct GreenbacksToken {
+    pub total_supply: Balance,
+    pub accounts: LookupMap<AccountId, Balance>,
+    pub sub_tokens: LookupMap<TokenType, SubTokenConfig>,
+}
+
+#[derive(BorshSerialize, BorshDeserialize)]
+pub enum TokenType {
+    ChuckleBucks,
+    BlueNotes,
+    StandardGBK
+}
+
+#[derive(BorshSerialize, BorshDeserialize)]
+pub struct SubTokenConfig {
+    conversion_rate: u32,
+    total_supply: Balance,
+    purpose: String,
+}
+```
+
+### Security Features
+```rust
+#[near_bindgen]
+impl GreenbacksToken {
+    // Pause mechanism for emergency stops
+    pub fn pause(&mut self) -> Promise;
+    
+    // Multi-signature requirements for large transfers
+    pub fn transfer_with_approval(&mut self, to: AccountId, amount: Balance) -> Promise;
+    
+    // Rate limiting to prevent abuse
+    pub fn check_rate_limit(&self, account_id: AccountId) -> bool;
+}
+```
+
+## 2. NEAR Integration Points
+
+### User Authentication
+```typescript
+interface NEARAuth {
+    wallet: NEARWallet;
+    accountId: string;
+    networkId: 'mainnet' | 'testnet';
+    contractId: string;
+}
+
+interface AuthenticationFlow {
+    signIn(): Promise<void>;
+    signOut(): Promise<void>;
+    getAccountBalance(): Promise<Balance>;
+    isSignedIn(): boolean;
+}
+```
+
+### Token Management
+```typescript
+interface TokenManagement {
+    mintTokens(amount: number): Promise<void>;
+    burnTokens(amount: number): Promise<void>;
+    convertTokens(from: TokenType, to: TokenType, amount: number): Promise<void>;
+    getBalance(tokenType: TokenType): Promise<number>;
+}
+```
+
+## 3. Cross-Platform Integration
+
+### Mobile Integration
+```typescript
+interface MobileNEARConfig {
+    walletUrl: string;
+    networkId: string;
+    contractName: string;
+    apiKey: string;
+}
+
+class NEARMobileSDK {
+    initialize(config: MobileNEARConfig): Promise<void>;
+    connectWallet(): Promise<string>;
+    executeTransaction(txn: Transaction): Promise<Result>;
+}
+```
+
+### Web Integration
+```typescript
+interface WebNEARConfig {
+    nodeUrl: string;
+    walletUrl: string;
+    helperUrl: string;
+    contractName: string;
+}
+
+class NEARWebSDK {
+    initialize(config: WebNEARConfig): Promise<void>;
+    signAndSendTransaction(txn: Transaction): Promise<void>;
+    getTransactionResult(txnHash: string): Promise<Result>;
+}
+```
+
+## 4. Security Measures
+
+### Transaction Security
+- Multi-signature requirements for large transactions
+- Rate limiting per account
+- Blacklist functionality for suspicious accounts
+- Transaction monitoring
+- Automated security checks
+
+### Data Protection
+- On-chain data encryption
+- Secure key management
+- Privacy-preserving transactions
+- Zero-knowledge proofs (future implementation)
+- Audit logging
+
+## 5. Implementation Phases
+
+### Phase 1: Basic Integration
+1. NEAR wallet connection
+2. Basic token transfers
+3. Account management
+4. Balance checking
+5. Transaction history
+
+### Phase 2: Enhanced Features
+1. Sub-token implementation
+2. Conversion mechanisms
+3. Smart contract deployment
+4. Security measures
+5. Rate limiting
+
+### Phase 3: Advanced Features
+1. DAO governance
+2. Staking mechanisms
+3. Advanced security
+4. Cross-chain bridges
+5. DeFi features
+
+## 6. Development Workflow
+
+```mermaid
+graph TD
+    A[Local Development] -->|Test Contract| B[NEAR TestNet]
+    B -->|Security Audit| C[Code Review]
+    C -->|Pass| D[MainNet Deployment]
+    C -->|Fail| A
+    D -->|Monitor| E[Production]
+```
+
+## 7. Example Implementation
+
+### Token Contract Implementation
+```rust
+#[near_bindgen]
+impl GreenbacksToken {
+    #[init]
+    pub fn new(owner_id: AccountId) -> Self {
+        Self {
+            total_supply: 0,
+            accounts: LookupMap::new(b"a"),
+            sub_tokens: LookupMap::new(b"s"),
+        }
+    }
+
+    #[payable]
+    pub fn mint(&mut self, account_id: AccountId, amount: Balance) {
+        assert!(self.is_authorized(), "Unauthorized");
+        self.accounts.insert(&account_id, &amount);
+        self.total_supply += amount;
+    }
+
+    #[payable]
+    pub fn transfer(&mut self, from: AccountId, to: AccountId, amount: Balance) {
+        self.assert_rate_limit(&from);
+        let from_balance = self.accounts.get(&from).unwrap_or(0);
+        let to_balance = self.accounts.get(&to).unwrap_or(0);
+        
+        assert!(from_balance >= amount, "Insufficient balance");
+        
+        self.accounts.insert(&from, &(from_balance - amount));
+        self.accounts.insert(&to, &(to_balance + amount));
+    }
+}
+```
+
+### Frontend Integration
+```typescript
+const connectToNEAR = async () => {
+    const near = await connect({
+        networkId: 'testnet',
+        nodeUrl: 'https://rpc.testnet.near.org',
+        walletUrl: 'https://wallet.testnet.near.org',
+        helperUrl: 'https://helper.testnet.near.org',
+        contractName: 'greenbacks.testnet'
+    });
+
+    const wallet = new WalletConnection(near);
+    
+    if (!wallet.isSignedIn()) {
+        wallet.requestSignIn({
+            contractId: 'greenbacks.testnet',
+            methodNames: ['mint', 'transfer', 'burn']
+        });
+    }
+
+    return 
