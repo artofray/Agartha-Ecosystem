@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Digital Earth Twin</title>
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="ui-panel">
+      <h1>Digital Earth Twin</h1>
+      <div class="toggles">
+        <label><input id="toggleSpin" type="checkbox" checked /> Auto spin</label>
+        <label><input id="toggleClouds" type="checkbox" checked /> Dynamic clouds</label>
+        <label><input id="toggleAtmosphere" type="checkbox" checked /> Atmosphere</label>
+        <label><input id="toggleNight" type="checkbox" /> Night mode + city lights</label>
+      </div>
+
+      <div class="actions">
+        <button data-city="newyork">New York</button>
+        <button data-city="tokyo">Tokyo</button>
+        <button data-city="london">London</button>
+        <button data-city="sydney">Sydney</button>
+        <button id="orbitalView">Orbital view</button>
+      </div>
+      <p class="hint">Tip: drag to orbit, scroll to zoom from space to 3D city streets.</p>
+    </div>
+
+    <div id="orbitalContainer"></div>
+    <div id="streetMap" aria-label="3D street map"></div>
+
+    <script src="https://unpkg.com/three@0.161.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.161.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
